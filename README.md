@@ -2,6 +2,8 @@
   Service Auth
 </h1>
 
+Serviço de autenticação e autorização com Spring Security e JWT.
+
 ## Tecnologias
  
 - [Spring Boot](https://spring.io/projects/spring-boot)
