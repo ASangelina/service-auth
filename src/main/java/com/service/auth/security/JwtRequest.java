@@ -1,4 +1,4 @@
-package com.service.auth.config;
+package com.service.auth.security;
 
 public class JwtRequest {
     private String token;
