@@ -24,16 +24,12 @@ jobs:
   check-version:
     runs-on: ubuntu-latest
     steps:
-      - name: Set up variables
-        id: setup
-        run: |
-          echo "STRING='${{ github.event.head_commit.message }}'" >> $GITHUB_ENV
-          
       - name: Check and update project version
         run: 
+          STRING="${{ github.event.head_commit.message }}"
           if [[ "${{ env.STRING }}" == *"Release"* ]]; then
             echo "Contains Release"
-            RELEASE_STRING="${{ env.STRING#*Release }}"
+            RELEASE_STRING="${STRING#*Release }"
             echo "RELEASE=$RELEASE_STRING" >> $GITHUB_ENV
           fi
   build:
