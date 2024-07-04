@@ -21,6 +21,15 @@ on:
       - staging
 
 jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check and update project version
+        run: 
+          if [["${{ steps.commit_message.outputs.message }}" == *"Release"*]]; then
+            echo "Contains Release"
+            commit_message = "${{ steps.commit_message.outputs.message }}"
+            echo "RELEASE=${commit_message#*Release }" >> $GITHUB_ENV
   build:
 
     runs-on: ubuntu-latest
@@ -151,7 +160,7 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            lucasnogueira1325/ese-auth:v1
+            lucasnogueira1325/ese-auth:${{ env.RELEASE }}
             
       - name: Logout from Docker Hub
         run: docker logout
