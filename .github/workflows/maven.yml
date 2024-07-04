@@ -60,7 +60,28 @@ jobs:
 
       - name: Run tests with Maven
         run: mvn test
+                  
+      - name: Docker Login
+        uses: docker/login-action@v3.2.0
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: List files in root directory
+        run: ls -al
+
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v6.1.0
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: |
+            lucasnogueira1325/ese-auth:${{ env.RELEASE }}
+            
+      - name: Logout from Docker Hub
+        run: docker logout
+        
   deploy-staging:
     needs: build
     runs-on: ubuntu-latest
@@ -68,6 +89,21 @@ jobs:
     steps:
       - name: Deploy to staging
         run: echo "Deploying to StaginDevg"
+        
+      - name: Check env variable is created
+        run: |
+          if [ -z "${{ env.RELEASE }}" ]; then
+            echo "RELEASE=v1.0.0" >> $GITHUB_ENV
+          fi
+          
+      - name: Check and update project version
+        run: |
+          STRING="${{ github.event.head_commit.message }}"
+          if [[ "$STRING" == *"Release"* ]]; then
+            echo "Contains Release"
+            RELEASE_STRING="${STRING#*Release }"
+            echo "RELEASE=$RELEASE_STRING" >> $GITHUB_ENV
+          fi
 
       - uses: actions/checkout@v4
       - name: Set up JDK 21
@@ -97,7 +133,28 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=LucaseNogueira_service-auth
+          
+      - name: Docker Login
+        uses: docker/login-action@v3.2.0
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: List files in root directory
+        run: ls -al
+
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v6.1.0
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: |
+            lucasnogueira1325/ese-auth:${{ env.RELEASE }}
+            
+      - name: Logout from Docker Hub
+        run: docker logout
+        
   deploy-master:
     needs: build
     runs-on: ubuntu-latest
