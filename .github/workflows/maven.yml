@@ -21,23 +21,6 @@ on:
       - staging
 
 jobs:
-  check-version:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check env variable is created
-        run: |
-          if [ -z "${{ env.RELEASE }}" ]; then
-            echo "RELEASE=v1.0.0" >> $GITHUB_ENV
-          fi
-          
-      - name: Check and update project version
-        run: |
-          STRING="${{ github.event.head_commit.message }}"
-          if [[ "$STRING" == *"Release"* ]]; then
-            echo "Contains Release"
-            RELEASE_STRING="${STRING#*Release }"
-            echo "RELEASE=$RELEASE_STRING" >> $GITHUB_ENV
-          fi
   build:
 
     runs-on: ubuntu-latest
@@ -122,6 +105,21 @@ jobs:
     steps:
       - name: Deploy to master
         run: echo "Deploying to Master"
+        
+      - name: Check env variable is created
+        run: |
+          if [ -z "${{ env.RELEASE }}" ]; then
+            echo "RELEASE=v1.0.0" >> $GITHUB_ENV
+          fi
+          
+      - name: Check and update project version
+        run: |
+          STRING="${{ github.event.head_commit.message }}"
+          if [[ "$STRING" == *"Release"* ]]; then
+            echo "Contains Release"
+            RELEASE_STRING="${STRING#*Release }"
+            echo "RELEASE=$RELEASE_STRING" >> $GITHUB_ENV
+          fi
 
       - uses: actions/checkout@v4
       - name: Set up JDK 21
