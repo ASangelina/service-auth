@@ -24,8 +24,14 @@ jobs:
   check-version:
     runs-on: ubuntu-latest
     steps:
+      - name: Check env variable is created
+        run: |
+          if [ -z "${{ env.RELEASE }}" ]; then
+            echo "RELEASE=v1.0.0" >> $GITHUB_ENV
+          fi
+          
       - name: Check and update project version
-        run: 
+        run: |
           STRING="${{ github.event.head_commit.message }}"
           if [[ "${{ env.STRING }}" == *"Release"* ]]; then
             echo "Contains Release"
