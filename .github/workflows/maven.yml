@@ -33,7 +33,7 @@ jobs:
       - name: Check and update project version
         run: |
           STRING="${{ github.event.head_commit.message }}"
-          if [[ "${{ STRING }}" == *"Release"* ]]; then
+          if [[ "$STRING" == *"Release"* ]]; then
             echo "Contains Release"
             RELEASE_STRING="${STRING#*Release }"
             echo "RELEASE=$RELEASE_STRING" >> $GITHUB_ENV
